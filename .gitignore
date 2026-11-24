@@ -1,0 +1,25 @@
+# OS / IDE
+.DS_Store
+.idea/
+*.iml
+.vscode/*
+!.vscode/extensions.json
+
+# Environnement (secrets)
+.env
+.env.local
+*.local
+
+# Backend (Maven)
+backend/target/
+backend/uploads/
+!backend/.mvn/wrapper/maven-wrapper.jar
+
+# Frontend (Node)
+frontend/node_modules/
+frontend/dist/
+frontend/coverage/
+
+# Logs
+*.log
+npm-debug.log*

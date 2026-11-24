@@ -1,0 +1,29 @@
+# Services d'infrastructure pour le développement local.
+# Lancement : docker compose up -d
+services:
+  postgres:
+    image: postgres:17-alpine
+    container_name: coworkspace-db
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-coworkspace}
+      POSTGRES_USER: ${POSTGRES_USER:-coworkspace}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-coworkspace}
+    ports:
+      - "${DB_PORT:-5432}:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-coworkspace} -d ${POSTGRES_DB:-coworkspace}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  mailpit:
+    image: axllent/mailpit:latest
+    container_name: coworkspace-mail
+    ports:
+      - "${MAIL_PORT:-1025}:1025" # SMTP
+      - "${MAILPIT_UI_PORT:-8025}:8025" # Interface web : http://localhost:8025
+
+volumes:
+  pgdata:

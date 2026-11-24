@@ -27,7 +27,8 @@ Elle remplace le fichier Excel du client et rend les réservations en double **i
 
 | Module | Fonctionnalités | État |
 |---|---|---|
-| **Authentification** | Inscription avec validation de l'email, validation manuelle par un admin, connexion, mot de passe oublié / réinitialisation, modification du profil (nom, prénom, téléphone, photo) | 🚧 |
+| **Socle technique** | Structure du dépôt, Docker (PostgreSQL + Mailpit), API Spring Boot sécurisée (JWT), schéma de base de données et données de référence, squelette React, CI | ✅ |
+| **Authentification** | Inscription avec validation de l'email, validation manuelle par un admin, connexion, mot de passe oublié / réinitialisation, modification du profil (nom, prénom, téléphone, photo) | ⏳ |
 | **Visualisation** | Plan interactif de l'open space et des salles, couleur selon le statut actuel, équipements, nombre de places | ⏳ |
 | **Réservation** | Filtres (type, équipement, capacité), calendrier de la semaine, réservation récurrente, modification, annulation, historique, événement privé / public | ⏳ |
 | **Administration** | CRUD des espaces et équipements, liste des membres (actif / inactif), validation des inscriptions, tableau de bord (réservations du jour, taux d'occupation de la semaine) | ⏳ |
@@ -47,12 +48,12 @@ Elle remplace le fichier Excel du client et rend les réservations en double **i
 
 | Couche | Technologies |
 |---|---|
-| Frontend | React 19, TypeScript, Vite, Tailwind CSS, React Router, TanStack Query, React Hook Form + Zod, FullCalendar |
+| Frontend | React 19, TypeScript, Vite, Tailwind CSS, React Router, TanStack Query (puis React Hook Form + Zod et FullCalendar avec les modules) |
 | Backend | Java 21, Spring Boot 4 (Web, Data JPA, Security, OAuth2 Resource Server / JWT, Validation, Mail, Thymeleaf) |
 | Base de données | PostgreSQL 17, migrations Flyway |
 | Emails (dev) | Mailpit : faux serveur SMTP avec une boîte de réception web |
 | Tests | JUnit 5, Mockito, Testcontainers (back) · Vitest, Testing Library (front) |
-| Outillage | Docker Compose, Maven Wrapper, ESLint, Prettier, GitHub Actions |
+| Outillage | Docker Compose, Maven Wrapper, Oxlint, Prettier, GitHub Actions |
 
 Les raisons de ces choix sont détaillées dans [`docs/choix-techniques.md`](docs/choix-techniques.md).
 
@@ -96,7 +97,9 @@ docker compose up -d
 cd backend
 ./mvnw spring-boot:run
 ```
-L'API répond sur **http://localhost:8080/api**. Au premier démarrage, Flyway crée les tables et, en profil `dev` (actif par défaut), des données de démonstration sont insérées.
+L'API répond sur **http://localhost:8080/api**. Au premier démarrage, Flyway crée les tables et insère les données de référence (50 postes, 4 salles, équipements).
+- État de l'API : http://localhost:8080/actuator/health
+- Documentation interactive (Swagger) : http://localhost:8080/swagger-ui.html
 
 ### 4. Lancer le frontend
 Dans un autre terminal :
@@ -105,7 +108,7 @@ cd frontend
 npm install
 npm run dev
 ```
-L'application est accessible sur **http://localhost:5173**, ou sur le port défini par `FRONTEND_PORT`.
+L'application est accessible sur **http://localhost:5173**, ou sur le port défini par `FRONTEND_PORT`. En développement, Vite redirige les appels `/api` vers le backend : la page d'accueil indique si l'API est joignable.
 
 ### Arrêter
 ```bash
@@ -117,7 +120,7 @@ docker compose down -v     # arrête et SUPPRIME les données de la base
 
 ## Comptes de démonstration
 
-Ces comptes sont créés automatiquement en profil `dev` :
+> ⏳ Disponible avec le module Authentification : ces comptes seront créés automatiquement en profil `dev`.
 
 | Rôle | Email | Mot de passe |
 |---|---|---|
@@ -133,11 +136,17 @@ Ces comptes sont créés automatiquement en profil `dev` :
 # Backend : tests unitaires + tests d'intégration (Docker requis pour Testcontainers)
 cd backend && ./mvnw verify
 
-# Frontend : lint, tests unitaires, build
-cd frontend && npm run lint && npm test && npm run build
+# Frontend : lint, formatage, tests unitaires, build
+cd frontend && npm run lint && npm run format:check && npm test && npm run build
 ```
 
-Le scénario de test manuel (inscription → réservation) est décrit dans [`docs/scenario-test.md`](docs/scenario-test.md).
+Déjà en place :
+- **Backend** : démarrage de l'application, règles d'accès de la sécurité, migrations, et **refus d'un chevauchement de réservations par la base** (sur un vrai PostgreSQL via Testcontainers).
+- **Frontend** : client API (jeton JWT, gestion des erreurs) et layout.
+
+La CI GitHub Actions (`.github/workflows/ci.yml`) lance tous ces contrôles à chaque push sur `main` / `develop` et à chaque Pull Request.
+
+Le scénario de test manuel (inscription → réservation) sera décrit dans [`docs/scenario-test.md`](docs/scenario-test.md).
 
 ---
 
@@ -162,7 +171,11 @@ co-workspace/
 │       ├── components/      composants d'interface réutilisables
 │       ├── routes/          routage et routes protégées
 │       └── lib/             utilitaires et types
+│   └── src/main/resources/
+│       ├── application.yml  configuration (lit le fichier .env)
+│       └── db/migration/    scripts Flyway (schéma + données de référence)
 ├── docs/                    dossier de conception
+├── .github/workflows/       intégration continue
 ├── docker-compose.yml       PostgreSQL + Mailpit
 └── .env.example             modèle de configuration
 ```
@@ -189,6 +202,8 @@ Branches de travail : `feature/socle-technique`, `feature/auth`, `feature/visual
 ---
 
 ## Documentation
+
+Le dossier de conception est en cours de rédaction sur la branche `docs/conception`.
 
 | Document | Contenu |
 |---|---|

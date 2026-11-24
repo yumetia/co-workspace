@@ -1,0 +1,4 @@
+# Profil utilisé par les tests automatisés (la base est fournie par Testcontainers).
+app:
+  jwt:
+    secret: test-secret-key-that-is-long-enough-for-hs256-signing

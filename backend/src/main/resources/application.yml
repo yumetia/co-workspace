@@ -1,0 +1,54 @@
+# Configuration principale de l'API CoWork'Space.
+# Les valeurs sensibles viennent des variables d'environnement ou du fichier ../.env (voir .env.example).
+spring:
+  application:
+    name: coworkspace
+  profiles:
+    default: dev
+  config:
+    import:
+      - optional:file:../.env[.properties]
+      - optional:file:.env[.properties]
+  datasource:
+    url: jdbc:postgresql://localhost:${DB_PORT:5432}/${POSTGRES_DB:coworkspace}
+    username: ${POSTGRES_USER:coworkspace}
+    password: ${POSTGRES_PASSWORD:coworkspace}
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        jdbc:
+          time_zone: UTC
+  flyway:
+    enabled: true
+  mail:
+    host: ${MAIL_HOST:localhost}
+    port: ${MAIL_PORT:1025}
+
+server:
+  port: ${SERVER_PORT:8080}
+  error:
+    include-message: never
+    include-stacktrace: never
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+  api-docs:
+    path: /v3/api-docs
+
+app:
+  frontend-url: ${FRONTEND_URL:http://localhost:5173}
+  mail-from: ${MAIL_FROM:no-reply@coworkspace.local}
+  timezone: Europe/Paris
+  jwt:
+    secret: ${JWT_SECRET:}
+    expiration: 8h

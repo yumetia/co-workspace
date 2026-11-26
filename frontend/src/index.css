@@ -2,13 +2,15 @@
 
 /* Jetons de design partagés par toute l'application. */
 @theme {
-  --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  --font-sans:
+    -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Helvetica Neue',
+    ui-sans-serif, system-ui, sans-serif;
 
-  --color-brand-50: #eef4ff;
-  --color-brand-100: #dbe6ff;
-  --color-brand-500: #2f6bff;
-  --color-brand-600: #1f55e0;
-  --color-brand-700: #1a45b5;
+  --color-brand-50: #f5f5f7;
+  --color-brand-100: #e8e8ed;
+  --color-brand-500: #2997ff;
+  --color-brand-600: #0071e3;
+  --color-brand-700: #006edb;
 
   /* Statuts des espaces sur le plan */
   --color-status-free: #16a34a;
@@ -18,5 +20,8 @@
 }
 
 body {
-  @apply bg-slate-50 text-slate-900 antialiased;
+  @apply bg-white text-slate-900 antialiased;
+  font-family:
+    -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Helvetica Neue',
+    ui-sans-serif, system-ui, sans-serif;
 }

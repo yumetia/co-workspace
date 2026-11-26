@@ -1,6 +1,7 @@
 import { createBrowserRouter } from 'react-router'
 import { AppLayout } from '../components/layout/AppLayout'
 import { HomePage } from '../features/home/HomePage'
+import { SpacePlan } from '../features/spaces/SpacePlan'
 import { ErrorPage } from './ErrorPage'
 import { NotFoundPage } from './NotFoundPage'
 
@@ -15,6 +16,7 @@ export const router = createBrowserRouter([
     errorElement: <ErrorPage />,
     children: [
       { index: true, element: <HomePage /> },
+      { path: 'plan', element: <SpacePlan /> },
       { path: '*', element: <NotFoundPage /> },
     ],
   },
